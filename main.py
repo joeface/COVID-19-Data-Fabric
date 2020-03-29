@@ -109,8 +109,9 @@ class CovidDataFactory(object):
         self.combine_data()
 
         if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
-            print('No S3-type Storage Available')
-            return False
+            print(
+                '\nNo S3-type Storage Available.\nCOVID-19 data is stored in self.covid_data property.')
+            return True
 
         result = self.save_to_cloud()
         print('Saving JSON to Cloud Storage:', 'OK' if result else 'ERROR')
@@ -246,7 +247,7 @@ class CovidDataFactory(object):
         wom_data = self.read_worldometer()
         csse = self.read_covid_csse()
 
-        print('Total items in ARCGIS', len(self.covid_data))
+        print('\n', 'Total items in ARCGIS', len(self.covid_data))
         print('Total items in CSSE', len(csse))
         print('Total items in Worldometer', len(wom_data), '\n')
 
@@ -366,7 +367,11 @@ class CovidDataFactory(object):
         return 0
 
 
-def update_covid19_data(event, context):
+def update_covid19_data(event=None, context=None):
 
     cdf = CovidDataFactory()
     cdf.execute()
+
+
+if __name__ == "__main__":
+    update_covid19_data()
