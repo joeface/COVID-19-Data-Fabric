@@ -21,6 +21,8 @@ from boto3.s3.transfer import S3Transfer
 
 from bs4 import BeautifulSoup
 
+import redis
+
 
 '''
 Amazon S3-type Storage Configuration
@@ -117,12 +119,12 @@ class CovidDataFactory(object):
 
         if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
             print(
-                '\nNo S3-type Storage Available.\nCOVID-19 data is stored in self.covid_data property.')
-            print('\nEND\n')
-            return True
+                '\nNo S3-type Storage Available.\nTrying to store data into Redis.')
+            result = self.save_to_redis()
+        else:
+            result = self.save_to_cloud()
 
-        result = self.save_to_cloud()
-        print('Saving JSON to Cloud Storage:', 'OK' if result else 'ERROR')
+        print('Saving JSON:', 'OK' if result else 'ERROR')
 
         print('\nEND\n')
 
@@ -411,6 +413,16 @@ class CovidDataFactory(object):
                 ACL='public-read', Bucket=AWS_STORAGE_BUCKET_NAME, Key="covid-19/map.json")
             return True
 
+        except:
+            return False
+
+    def save_to_redis(self):
+        '''
+        Save JSON dump into Redis storage
+        '''
+        try:
+            r = redis.Redis()
+            return r.set('covid_data', json.dumps(self.covid_data, ensure_ascii=False))
         except:
             return False
 
