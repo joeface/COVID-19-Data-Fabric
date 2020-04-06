@@ -1,12 +1,12 @@
 # COVID-19 Data Factory with Cloud Storage Support
 
-COVID-19 Data Factory is a Python script that fetches actual COVID-19 data from CSSE at JHU, Worldometers and uploads it into Cloud or stores into Redis.
+COVID-19 Data Factory is a Python script that fetches actual COVID-19 data from CSSE at JHU, Worldometers and uploads it into Cloud or stores it into Redis as a fall-back.
 The lib is ready to use as a Google Cloud Function or Amazon Lambda.
 
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install required packages.
-Packages may by installed in a virtualenv (recommended) or globally.
+Packages may be installed in a virtualenv (recommended) or globally.
 
 ```bash
 pip install -r requirements.txt
@@ -37,7 +37,7 @@ python main.py
 
 
 You may also setup a scheduler (cron) to run the command periodically. 
-Instruction below runs the app each 5th minute of each hour using python from app virtualenv (we need access to packeges installed from requirements.txt) and rewrites log at $PATH_TO_LOG
+The instruction below runs the app each 5th minute of each hour using python from app virtualenv (we need access to packages listed in requirements.txt) and rewrites log at $PATH_TO_LOG
 ```bash
 05 * * * * $PATH_TO_VIRTUALENV/bin/python $PATH_TO_APP/main.py > $PATH_TO_LOG 2>&1
 ```
