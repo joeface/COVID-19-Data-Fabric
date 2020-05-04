@@ -117,6 +117,10 @@ class CovidDataFactory(object):
         self.covid_data = self.read_arcgis()
         self.combine_data()
 
+        if not self.validate_json():
+            print("COVID JSON data validation fail")
+            raise
+
         if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
             print(
                 '\nNo S3-type Storage Available.\nTrying to store data into Redis.')
@@ -129,6 +133,28 @@ class CovidDataFactory(object):
         print('\nEND\n')
 
         return result
+
+    def validate_json(self):
+        '''
+        Check number of records to Save
+        '''
+
+        # Should be less or equal to original list of countries and at list 100
+        # items long
+        if len(COUNTRIES) >= len(self.covid_data) > 100:
+
+            for code, data in self.covid_data.items():
+
+                # Check Confirmed/Deaths/Recovered values and control sum
+                if not (data['confirmed'] > 0 or data['deaths'] > 0 or data['recovered'] > 0) or not (data['confirmed'] >= data['deaths'] + data['recovered']):
+                    print(data)
+                    raise ValueError
+
+            # Return True if data is valid
+            return True
+
+        # Invalid nuber of records
+        return False
 
     def add_country_data(self, country_name=None, confirmed=0, deaths=0, recovered=0, latest_update=None, source=''):
         '''
